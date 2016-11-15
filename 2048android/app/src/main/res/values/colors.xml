@@ -3,4 +3,23 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="detailBackground">#FF098809</color>
+    <color name="boardBackground">#FF22bb22</color>
+    <color name="cellBackground">#FF44dd44</color>
+    <color name="number0">#00ffffff</color>
+    <color name="number2">#FFFFCC</color>
+    <color name="number4">#FFFF99</color>
+    <color name="number8">#FFFF66</color>
+    <color name="number16">#FFFF33</color>
+    <color name="number32">#FFFF00</color>
+    <color name="number64">#CCCC00</color>
+    <color name="number128">#999900</color>
+    <color name="number256">#808000</color>
+    <color name="number512">#666600</color>
+    <color name="number1024">#DC143C</color>
+    <color name="number2048">#B22222</color>
+    <color name="number">#ff000000</color>
+
+    <color name="white">#FFFFFFFF</color>
 </resources>
