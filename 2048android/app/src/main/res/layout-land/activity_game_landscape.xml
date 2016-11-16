@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_game"
     android:layout_width="match_parent"
@@ -9,6 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:rowCount="1"
+    android:orientation="vertical"
     android:columnCount="1"
     tools:context="br.com.marblestudio.a2048android.GameActivity">
 
@@ -19,12 +20,12 @@
         android:textAlignment="center"
         android:textSize="20dp"
         android:text="Score"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:id="@+id/scoreMan"/>
 
     <br.com.marblestudio.a2048android.Game2048
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:id="@+id/board"
         />
-</GridLayout>
+</LinearLayout>
