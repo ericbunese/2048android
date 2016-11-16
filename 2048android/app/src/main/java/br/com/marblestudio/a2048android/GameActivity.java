@@ -2,6 +2,8 @@ package br.com.marblestudio.a2048android;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,20 +27,23 @@ public class GameActivity extends AppCompatActivity{
     private int threshold = 200;
     private boolean touchStarted = false, thresholdPassed = false;
     private Game2048 gameBoard;
+    private ScoreMan scoreMan;
+    private Button playAgain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        playAgain = (Button) findViewById(R.id.playAgain);
         gameBoard = (Game2048) findViewById(R.id.board);
+        scoreMan = (ScoreMan) findViewById(R.id.scoreMan);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        Log.d(DEBUG_TAG, "onConfigurationChanged");
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
@@ -45,6 +53,14 @@ public class GameActivity extends AppCompatActivity{
         {
             loadGame();
         }
+    }
+
+    public void clickHandlerPlayAgain(View view)
+    {
+        Log.d(DEBUG_TAG, "PLAY AGAIN");
+        gameBoard.restartGame();
+        saveGame();
+        playAgain.setVisibility(View.GONE);
     }
 
     //@Usar essa função para definir o threshold de swipe para um valor que tenha algo a ver com o tamanho da tela.
@@ -77,28 +93,23 @@ public class GameActivity extends AppCompatActivity{
         if (angle<45 && angle>=0 || angle>=315 && angle<=360)
         {
             //RIGHT
-            gameBoard.setBoardPos(2, 2, 4);
             Log.d(DEBUG_TAG, "swipe right");
         }
         else if (angle>=45 && angle<135)
         {
             //UP
-            gameBoard.setBoardPos(1, 1, 512);
             Log.d(DEBUG_TAG, "swipe up");
         }
         else if (angle>=135 && angle<225)
         {
             //LEFT
-            gameBoard.setBoardPos(0, 0, 1024);
             Log.d(DEBUG_TAG, "swipe left");
         }
         else
         {
             //DOWN
-            gameBoard.setBoardPos(0, 1, 16);
             Log.d(DEBUG_TAG, "swipe down");
         }
-        gameBoard.invalidate();
     }
 
     @Override
@@ -106,41 +117,56 @@ public class GameActivity extends AppCompatActivity{
     {
         int action = MotionEventCompat.getActionMasked(event);
 
-        switch(action)
+        if (gameBoard.getPlay())
         {
-            case (MotionEvent.ACTION_DOWN) :
-                touchStarted = true;
-                thresholdPassed = false;
-                xstart = (int)event.getX();
-                ystart = (int)event.getY();
-                return true;
-            case (MotionEvent.ACTION_MOVE) :
-                x = (int)event.getX();
-                y = (int)event.getY();
-                if (!thresholdPassed)
-                {
-                    if (pointDistance(xstart, ystart, x, y)>threshold)
-                    {
-                        thresholdPassed = true;
+
+            switch (action) {
+                case (MotionEvent.ACTION_DOWN):
+                    touchStarted = true;
+                    thresholdPassed = false;
+                    xstart = (int) event.getX();
+                    ystart = (int) event.getY();
+                    return true;
+                case (MotionEvent.ACTION_MOVE):
+                    x = (int) event.getX();
+                    y = (int) event.getY();
+                    if (!thresholdPassed) {
+                        if (pointDistance(xstart, ystart, x, y) > threshold) {
+                            thresholdPassed = true;
+                        }
                     }
-                }
 
-                return true;
-            case (MotionEvent.ACTION_UP) :
-                x = (int)event.getX();
-                y = (int)event.getY();
+                    return true;
+                case (MotionEvent.ACTION_UP):
+                    x = (int) event.getX();
+                    y = (int) event.getY();
 
-                if (thresholdPassed)
-                {
-                    int angle = pointDirection(x, y, xstart, ystart);
-                    swipe(angle);
-                    saveGame();
-                }
+                    if (thresholdPassed) {
+                        int angle = pointDirection(x, y, xstart, ystart);
+                        swipe(angle);
+                        gameBoard.setPlay(false);
 
-                touchStarted = false;
-                return true;
-            default :
-                return super.onTouchEvent(event);
+                        if (gameBoard.spawn()) {
+                            gameBoard.invalidate();
+                            saveGame();
+                            gameBoard.setPlay(true);
+                        } else {
+                            gameBoard.invalidate();
+                            Toast toast = Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT);
+                            toast.show();
+
+                            playAgain.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    touchStarted = false;
+                    return true;
+                default:
+                    return false;//super.onTouchEvent(event);
+            }
+        }
+        else
+        {
+            return false;
         }
     }
 

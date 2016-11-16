@@ -9,6 +9,8 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -20,7 +22,7 @@ public class Game2048 extends View
     private int[][] board = new int[4][4];
     private Paint cellPaint, cellBackgroundPaint, textPaint, textBorderPaint;
     private Random randomMan;
-    private ScoreMan scoreMan;
+    private boolean play;
 
     public void setBoardPos(int h, int v, int val)
     {
@@ -30,6 +32,70 @@ public class Game2048 extends View
     public int getBoardPos(int h, int v)
     {
         return this.board[h][v];
+    }
+
+    public boolean getPlay()
+    {
+        return play;
+    }
+
+    public void setPlay(boolean play)
+    {
+        this.play = play;
+    }
+
+    private boolean gameOver()
+    {
+        int free = 0;
+        for (int i=0;i<4;++i)
+        {
+            for(int j=0;j<4;++j)
+            {
+                if (board[i][j]==0)
+                    free++;
+            }
+        }
+        return (free==0);
+    }
+
+    public boolean spawn()
+    {
+        if (gameOver())
+            return false;
+        else
+        {
+            int rand = randomMan.nextInt(3), val;
+            int[] pos;
+            ArrayList<int[]> list = new ArrayList<>();
+
+            //Make a list of all free spots in the game board
+            for (int i=0;i<4;++i)
+            {
+                for (int j=0;j<4;++j)
+                {
+                    if (getBoardPos(i, j)==0)
+                    {
+                        pos = new int[2];
+                        pos[0] = i;
+                        pos[1] = j;
+                        list.add(pos);
+                    }
+                }
+            }
+
+            //Decide if we're placing a two or four
+            if (rand<3)
+                val = 2;
+            else val = 4;
+
+            //Grab a random position within that list
+            Collections.shuffle(list);
+            pos = list.get(0);
+
+            //Place the new number at that position
+            setBoardPos(pos[0], pos[1], val);
+            return true;
+        }
     }
 
     private int measure(int Spec)
@@ -47,15 +113,24 @@ public class Game2048 extends View
         return retVal;
     }
 
+    public void restartGame()
+    {
+        for(int i=0;i<4;++i)
+            for(int j=0;j<4;++j)
+                board[i][j] = 0;
+
+        play = true;
+        this.invalidate();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void startGame()
     {
-        scoreMan = (ScoreMan) findViewById(R.id.scoreMan);
         randomMan = new Random();
 
         for(int i=0;i<4;++i)
             for(int j=0;j<4;++j)
-                board[i][j] = 0;//(int) Math.pow(2, randomMan.nextInt(11));
+                board[i][j] = 0;
 
         cellBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -71,6 +146,8 @@ public class Game2048 extends View
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(getResources().getColor(R.color.white, null));
         textPaint.setTextSize(40);
+
+        play = true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

@@ -26,4 +26,12 @@
         android:layout_width="wrap_content"
         android:id="@+id/board"
         />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/play_again"
+        android:visibility="invisible"
+        android:onClick="clickHandlerPlayAgain"
+        android:id="@+id/playAgain"/>
 </LinearLayout>
