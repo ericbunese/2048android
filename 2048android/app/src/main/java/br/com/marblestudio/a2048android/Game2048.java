@@ -3,7 +3,6 @@ package br.com.marblestudio.a2048android;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -21,6 +20,7 @@ public class Game2048 extends View
     private int[][] board = new int[4][4];
     private Paint cellPaint, cellBackgroundPaint, textPaint, textBorderPaint;
     private Random randomMan;
+    private ScoreMan scoreMan;
 
     public void setBoardPos(int h, int v, int val)
     {
@@ -50,11 +50,12 @@ public class Game2048 extends View
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void startGame()
     {
-       randomMan = new Random();
+        scoreMan = (ScoreMan) findViewById(R.id.scoreMan);
+        randomMan = new Random();
 
-       for(int i=0;i<4;++i)
-           for(int j=0;j<4;++j)
-               board[i][j] = 0;//(int) Math.pow(2, randomMan.nextInt(11));
+        for(int i=0;i<4;++i)
+            for(int j=0;j<4;++j)
+                board[i][j] = 0;//(int) Math.pow(2, randomMan.nextInt(11));
 
         cellBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -70,7 +71,6 @@ public class Game2048 extends View
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(getResources().getColor(R.color.white, null));
         textPaint.setTextSize(40);
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -103,6 +103,7 @@ public class Game2048 extends View
         int measuredWidth = measure(widthSpec);
         int measuredHeight = measure(heightSpec);
         int diam = Math.min(measuredWidth, measuredHeight);
+
         setMeasuredDimension(diam, diam);
     }
 
