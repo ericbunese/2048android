@@ -25,7 +25,7 @@ public class GameActivity extends AppCompatActivity{
     private static String DEBUG_TAG = "--2048--debug:";
     private int xstart, ystart, x, y;
     private int threshold = 200;
-    private boolean touchStarted = false, thresholdPassed = false;
+    private boolean thresholdPassed = false;
     private Game2048 gameBoard;
     private ScoreMan scoreMan;
     private Button playAgain;
@@ -45,11 +45,7 @@ public class GameActivity extends AppCompatActivity{
         super.onConfigurationChanged(newConfig);
 
         // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-            loadGame();
-        }
-        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
         {
             loadGame();
         }
@@ -60,7 +56,7 @@ public class GameActivity extends AppCompatActivity{
         Log.d(DEBUG_TAG, "PLAY AGAIN");
         gameBoard.restartGame();
         saveGame();
-        playAgain.setVisibility(View.GONE);
+        playAgain.setVisibility(View.INVISIBLE);
     }
 
     //@Usar essa função para definir o threshold de swipe para um valor que tenha algo a ver com o tamanho da tela.
@@ -122,7 +118,6 @@ public class GameActivity extends AppCompatActivity{
 
             switch (action) {
                 case (MotionEvent.ACTION_DOWN):
-                    touchStarted = true;
                     thresholdPassed = false;
                     xstart = (int) event.getX();
                     ystart = (int) event.getY();
@@ -158,7 +153,6 @@ public class GameActivity extends AppCompatActivity{
                             playAgain.setVisibility(View.VISIBLE);
                         }
                     }
-                    touchStarted = false;
                     return true;
                 default:
                     return false;//super.onTouchEvent(event);
