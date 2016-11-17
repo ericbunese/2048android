@@ -25,7 +25,7 @@ public class GameActivity extends AppCompatActivity{
     private static String DEBUG_TAG = "--2048--debug:";
     private int xstart, ystart, x, y;
     private int threshold = 200;
-    private boolean thresholdPassed = false;
+    private boolean thresholdPassed = false, moveSuccess;
     private Game2048 gameBoard;
     private ScoreMan scoreMan;
     private Button playAgain;
@@ -37,6 +37,15 @@ public class GameActivity extends AppCompatActivity{
 
         playAgain = (Button) findViewById(R.id.playAgain);
         gameBoard = (Game2048) findViewById(R.id.board);
+        if (gameBoard.spawn())
+        {
+            Log.d(DEBUG_TAG, "SPAWN");
+            gameBoard.invalidate();
+        }
+        else
+        {
+            Log.d(DEBUG_TAG, "NOPE");
+        }
         scoreMan = (ScoreMan) findViewById(R.id.scoreMan);
     }
 
@@ -84,28 +93,34 @@ public class GameActivity extends AppCompatActivity{
         return (int) angle;
     }
 
-    private void swipe(int angle)
+    private boolean swipe(int angle)
     {
+        boolean success = false;
         if (angle<45 && angle>=0 || angle>=315 && angle<=360)
         {
             //RIGHT
+            success = gameBoard.moveDown();
             Log.d(DEBUG_TAG, "swipe right");
         }
         else if (angle>=45 && angle<135)
         {
             //UP
+            success = gameBoard.moveLeft();
             Log.d(DEBUG_TAG, "swipe up");
         }
         else if (angle>=135 && angle<225)
         {
             //LEFT
+            success = gameBoard.moveUp();
             Log.d(DEBUG_TAG, "swipe left");
         }
         else
         {
             //DOWN
+            success = gameBoard.moveRight();
             Log.d(DEBUG_TAG, "swipe down");
         }
+        return success;
     }
 
     @Override
@@ -136,22 +151,31 @@ public class GameActivity extends AppCompatActivity{
                     x = (int) event.getX();
                     y = (int) event.getY();
 
-                    if (thresholdPassed) {
+                    if (thresholdPassed)
+                    {
                         int angle = pointDirection(x, y, xstart, ystart);
-                        swipe(angle);
+                        moveSuccess = swipe(angle);
                         gameBoard.setPlay(false);
+                        if (moveSuccess)
+                        {
+                            gameBoard.setPlay(false);
 
-                        if (gameBoard.spawn()) {
-                            gameBoard.invalidate();
-                            saveGame();
-                            gameBoard.setPlay(true);
-                        } else {
-                            gameBoard.invalidate();
-                            Toast toast = Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT);
-                            toast.show();
+                            if (gameBoard.spawn())
+                            {
+                                gameBoard.invalidate();
+                                saveGame();
+                                gameBoard.setPlay(true);
+                            }
+                            else
+                            {
+                                gameBoard.invalidate();
+                                Toast toast = Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT);
+                                toast.show();
 
-                            playAgain.setVisibility(View.VISIBLE);
+                                playAgain.setVisibility(View.VISIBLE);
+                            }
                         }
+                        else gameBoard.setPlay(true);
                     }
                     return true;
                 default:

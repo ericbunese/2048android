@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -44,6 +45,21 @@ public class Game2048 extends View
         this.play = play;
     }
 
+
+    private boolean gameOver()
+    {
+        boolean ended = true;
+        if (countEmpty()>0) return false;
+        if (findPairDown()) return false;
+        rotateBoard();
+        if (findPairDown()) ended = false;
+        rotateBoard();
+        rotateBoard();
+        rotateBoard();
+        return ended;
+    }
+
+    /*
     private boolean gameOver()
     {
         int free = 0;
@@ -56,7 +72,7 @@ public class Game2048 extends View
             }
         }
         return (free==0);
-    }
+    }*/
 
     public boolean spawn()
     {
@@ -96,6 +112,162 @@ public class Game2048 extends View
             setBoardPos(pos[0], pos[1], val);
             return true;
         }
+    }
+
+    public void rotateBoard()
+    {
+        int n = 4;
+        int tmp;
+        for (int i=0; i<n/2; i++)
+        {
+            for (int j=i; j<n-i-1; j++)
+            {
+                tmp = board[i][j];
+                board[i][j] = board[j][n-i-1];
+                board[j][n-i-1] = board[n-i-1][n-j-1];
+                board[n-i-1][n-j-1] = board[n-j-1][i];
+                board[n-j-1][i] = tmp;
+            }
+        }
+    }
+
+    public int findTarget(int array[],int x,int stop)
+    {
+        int t;
+        // if the position is already on the first, don't evaluate
+        if (x==0)
+        {
+            return x;
+        }
+        for(t=x-1;t>=0;t--)
+        {
+            if (array[t]!=0)
+            {
+                if (array[t]!=array[x])
+                {
+                    // merge is not possible, take next position
+                    return t+1;
+                }
+                return t;
+            }
+            else
+            {
+                // we should not slide further, return this one
+                if (t==stop)
+                {
+                    return t;
+                }
+            }
+        }
+        // we did not find a
+        return x;
+    }
+
+    public boolean slideArray(int array[])
+    {
+        boolean success = false;
+        int x,t,stop=0;
+
+        for (x=0;x<4;x++)
+        {
+            if (array[x]!=0)
+            {
+                t = findTarget(array,x,stop);
+                // if target is not original position, then move or merge
+                if (t!=x)
+                {
+                    // if target is zero, this is a move
+                    if (array[t]==0)
+                    {
+                        array[t]=array[x];
+                    }
+                    else if (array[t]==array[x])
+                    {
+                        // merge (increase power of two)
+                        array[t]*=2;
+                        // increase score
+                        //@score+=(int)1<<array[t];
+                        // set stop to avoid double merge
+                        stop = t+1;
+                    }
+                    array[x]=0;
+                    success = true;
+                }
+            }
+        }
+        return success;
+    }
+
+    public boolean moveUp()
+    {
+        boolean success = false;
+        int x;
+        for (x=0;x<4;x++)
+        {
+            success |= slideArray(board[x]);
+        }
+        return success;
+    }
+
+    public boolean moveLeft()
+    {
+        boolean success;
+        rotateBoard();
+        success = moveUp();
+        rotateBoard();
+        rotateBoard();
+        rotateBoard();
+        return success;
+    }
+
+    public boolean moveDown()
+    {
+        boolean success;
+        rotateBoard();
+        rotateBoard();
+        success = moveUp();
+        rotateBoard();
+        rotateBoard();
+        return success;
+    }
+
+    public boolean moveRight()
+    {
+        boolean success;
+        rotateBoard();
+        rotateBoard();
+        rotateBoard();
+        success = moveUp();
+        rotateBoard();
+        return success;
+    }
+
+    public boolean findPairDown()
+    {
+        int x,y;
+        for (x=0;x<4;x++)
+        {
+            for (y=0;y<4-1;y++)
+            {
+                if (board[x][y]==board[x][y+1])
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public int countEmpty()
+    {
+        int x,y;
+        int count=0;
+        for (x=0;x<4;x++) {
+            for (y=0;y<4;y++) {
+                if (board[x][y]==0) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     private int measure(int Spec)
