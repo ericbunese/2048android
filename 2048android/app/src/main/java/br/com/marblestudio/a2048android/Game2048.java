@@ -20,6 +20,7 @@ import java.util.Random;
 
 public class Game2048 extends View
 {
+    public int score;
     private int[][] board = new int[4][4];
     private Paint cellPaint, cellBackgroundPaint, textPaint, textBorderPaint;
     private Random randomMan;
@@ -186,7 +187,7 @@ public class Game2048 extends View
                         // merge (increase power of two)
                         array[t]*=2;
                         // increase score
-                        //@score+=(int)1<<array[t];
+                        score+=array[t];
                         // set stop to avoid double merge
                         stop = t+1;
                     }
@@ -298,6 +299,7 @@ public class Game2048 extends View
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void startGame()
     {
+        score = 0;
         randomMan = new Random();
 
         for(int i=0;i<4;++i)

@@ -158,6 +158,7 @@ public class GameActivity extends AppCompatActivity{
                         gameBoard.setPlay(false);
                         if (moveSuccess)
                         {
+                            scoreMan.setText("SCORE: "+String.valueOf(gameBoard.score));
                             gameBoard.setPlay(false);
 
                             if (gameBoard.spawn())
