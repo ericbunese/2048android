@@ -166,14 +166,14 @@ public class GameActivity extends AppCompatActivity{
                                 gameBoard.invalidate();
                                 saveGame();
                                 gameBoard.setPlay(true);
-                            }
-                            else
-                            {
-                                gameBoard.invalidate();
-                                Toast toast = Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT);
-                                toast.show();
+                                if (gameBoard.gameOver())
+                                {
+                                    gameBoard.invalidate();
+                                    Toast toast = Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT);
+                                    toast.show();
 
-                                playAgain.setVisibility(View.VISIBLE);
+                                    playAgain.setVisibility(View.VISIBLE);
+                                }
                             }
                         }
                         else gameBoard.setPlay(true);

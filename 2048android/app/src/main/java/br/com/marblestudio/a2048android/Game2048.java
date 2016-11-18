@@ -47,7 +47,7 @@ public class Game2048 extends View
     }
 
 
-    private boolean gameOver()
+    public boolean gameOver()
     {
         boolean ended = true;
         if (countEmpty()>0) return false;
@@ -187,6 +187,7 @@ public class Game2048 extends View
                         // merge (increase power of two)
                         array[t]*=2;
                         // increase score
+                        Log.d("SCORETHING", String.valueOf(array[t]));
                         score+=array[t];
                         // set stop to avoid double merge
                         stop = t+1;
@@ -288,11 +289,13 @@ public class Game2048 extends View
 
     public void restartGame()
     {
+        score = 0;
         for(int i=0;i<4;++i)
             for(int j=0;j<4;++j)
                 board[i][j] = 0;
 
         play = true;
+        spawn();
         this.invalidate();
     }
 
