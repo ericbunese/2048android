@@ -81,7 +81,7 @@ public class Game2048 extends View
             return false;
         else
         {
-            int rand = randomMan.nextInt(3), val;
+            int rand = randomMan.nextInt(100), val;
             int[] pos;
             ArrayList<int[]> list = new ArrayList<>();
 
@@ -101,7 +101,7 @@ public class Game2048 extends View
             }
 
             //Decide if we're placing a two or four
-            if (rand<3)
+            if (rand<95)
                 val = 2;
             else val = 4;
 
